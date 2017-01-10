@@ -14,3 +14,9 @@ biocLite(c('widgetTools', 'tkWidgets', 'DynDoc'))
 ## Klusta
 https://github.com/kwikteam/klusta/#quick-install-guide
 
+## WaveCluss
+run matlab with command:
+~~~~
+LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
+~~~~
+

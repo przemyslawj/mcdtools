@@ -37,7 +37,7 @@ flags = [
     '-x',
     'c++',
     '-std=c++0x',
-    '-IMC_StreamAnsiLib',
+    '-Iincludes',
 ]
 
 
