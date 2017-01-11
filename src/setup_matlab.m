@@ -1,3 +1,3 @@
-addpath('build');
-addpath('MC_StreamAnsiLib');
+addpath([pwd '/build']);
+addpath([pwd '/MC_StreamAnsiLib']);
 

@@ -1,8 +1,8 @@
 mcd_dir = '/media/przemek/Storage/neurodata/mea/Mecp2-Hannah/';
 
-load('setup_matlab.m');
+setup_matlab;
 
-mcd_files = listfiles(mcd_dir, '*.mcd');
+mcd_files = listfiles(mcd_dir, 'Mecp2*.mcd');
 
 spikeparam.stdmin = 4;
 clusparam.min_clus = 50;
@@ -21,16 +21,9 @@ for i = 1:length(mcd_files)
     Get_spikes(listfiles('.', '*.mat'), 'parallel', true, 'par', spikeparam);
 
     sprintf('Clustering spikes')
-    Do_clustering(listfiles('.', '*spikes.mat'), 'parallel', true, 'par', clusparam);
+    Do_clustering(listfiles('.', '*spikes.mat'), 'parallel', true, 'make_plots', false, 'par', clusparam);
 
     cd('../..');
 end
 
-function result = listfiles(src_dir, filenamepattern)
-    result = cell(1, 60);
-    dirfiles = dir([src_dir '/' filenamepattern]);
-    for index = 1:length(dirfiles)
-        result{index} = [src_dir '/' dirfiles(index).name];
-    end
-end
 
