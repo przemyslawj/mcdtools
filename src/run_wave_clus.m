@@ -26,11 +26,4 @@ for i = 1:length(mcd_files)
     cd('../..');
 end
 
-function result = listfiles(src_dir, filenamepattern)
-    result = cell(1, 60);
-    dirfiles = dir([src_dir '/' filenamepattern]);
-    for index = 1:length(dirfiles)
-        result{index} = [src_dir '/' dirfiles(index).name];
-    end
-end
 
