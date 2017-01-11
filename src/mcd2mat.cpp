@@ -58,7 +58,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   short sFileOpenResult = m_MCSFile.OpenFile(csFileName.c_str());
 
   if(sFileOpenResult > 0) {
-    s = "Error loading file: " + csFileName + "\n\n";
+    string s = "Error loading file: " + csFileName + "\n\n";
 
     switch(sFileOpenResult) {
       case 1:
@@ -80,7 +80,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   string outputDir(mxArrayToString(prhs[1]));
 
-  mkdir(outputDir.c_str(), S_IRWXU);
+  //mkdir(outputDir.c_str(), S_IRWXU);
+  system(("mkdir -p " + outputDir).c_str());
 
   string streamId = "elec0001";
   long streamIndex = m_MCSFile.GetStreamIndexForStreamID((char*) streamId.c_str());

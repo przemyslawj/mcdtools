@@ -24,6 +24,7 @@ $(OBJ_DIR)/mcd2klusta: $(OBJ_DIR)/mcd2klusta.o $(MCD_LIB)
 
 $(OBJ_DIR)/mcd2mat: $(MCD_LIB) $(MATLAB_LIB)
 	mex -v CFLAGS='$(CFLAGS)' $(INCLUDES) -lMCStreamd -LMC_StreamAnsiLib src/mcd2mat.cpp
+	mv mcd2mat.mexa64 $(OBJ_DIR)/
 
 clean:
 	rm -rf $(OBJ_DIR)
