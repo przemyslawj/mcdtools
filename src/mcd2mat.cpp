@@ -37,7 +37,7 @@ string getString(const mxArray *arg);
 vector<string> GetChannelNames(CMCSAStream* stream);
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 MATFile* CreateMatOutput(string outputDir, char* channel);
-double* ReadRawData(CMCSAStream* Stream, int channelsInStream, int size);
+double* ReadRawData(CMCSAStream* Stream, int channelsInStream, long size);
 
 string getString(const mxArray *arg) {
     size_t buflen = mxGetN(arg) + 1;
@@ -80,9 +80,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   string outputDir(mxArrayToString(prhs[1]));
 
-  //mkdir(outputDir.c_str(), S_IRWXU);
   system(("mkdir -p " + outputDir).c_str());
 
+  char* bufferId = m_MCSFile.GetStream(0L)->GetBufferID();
   string streamId = "elec0001";
   long streamIndex = m_MCSFile.GetStreamIndexForStreamID((char*) streamId.c_str());
   CMCSAStream* Stream = m_MCSFile.GetStream(streamIndex);
@@ -91,7 +91,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   for (int i = 0; i < channelsInStream; ++i) {
     char* channel = Stream->GetChannel(i)->GetDecoratedName();
     MATFile* matFile = CreateMatOutput(outputDir, channel);
-    long size = Stream->GetSampleRate() * 600;
+    long size = Stream->GetRawDataBufferSizeOfChannel();
     mxArray* pa = mxCreateDoubleMatrix(1, size, mxREAL);
     double* data = ReadRawData(Stream, i, size);
     memcpy((void *)(mxGetPr(pa)), (void *)data, sizeof(double) * size);
@@ -125,9 +125,8 @@ MATFile* CreateMatOutput(string outputDir, char* channel) {
 }
 
 
-double* ReadRawData(CMCSAStream* Stream, int channel, int size) {
+double* ReadRawData(CMCSAStream* Stream, int channel, long size) {
   int channelsInStream = Stream->GetChannelCount();
-  double* data = (double *) mxMalloc(sizeof(double) * size);
 
   int ADZero = Stream->GetADZero();
   double UnitsPerAD = Stream->GetUnitsPerAD();
@@ -135,28 +134,14 @@ double* ReadRawData(CMCSAStream* Stream, int channel, int size) {
   mexPrintf("Reading data for channel %d\n", channel);
 
   CMCSAChunk* currentChunk = Stream->GetFirstChunk();
-  long index = 0;
-  while (currentChunk) {
-    CMCSATimeStamp* toTimestamp = currentChunk->GetTimeStampFrom();
-    long bufferSize = currentChunk->GetSize();
-    short *buffer = (short *) mxMalloc(sizeof(short) * bufferSize);
-    currentChunk->ReadData(buffer);
-    for (int i = 0; i < bufferSize; ++i) {
-      if (index >= size) {
-          mxFree(buffer);
-          return data;
-      }
-
-      int currentChannel = i % channelsInStream;
-      if (currentChannel == channel) {
-        double realWordValue = (((unsigned short) buffer[i]) - ADZero) * UnitsPerAD;
-        data[index] = realWordValue;
-        ++index;
-      }
-    }
-    mxFree(buffer);
-    currentChunk = Stream->GetNextChunk(currentChunk);
+  double* data = (double *) mxMalloc(sizeof(double) * size);
+  short *buffer = (short *) mxMalloc(sizeof(short) * size);
+  Stream->GetRawDataOfChannel(buffer, channel);
+  for (int i = 0; i < size; ++i) {
+    double realWordValue = (((unsigned short) buffer[i]) - ADZero) * UnitsPerAD;
+    data[i] = realWordValue;
   }
+  mxFree(buffer);
   return data;
 }
 
