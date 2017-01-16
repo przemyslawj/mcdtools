@@ -14,9 +14,19 @@ biocLite(c('widgetTools', 'tkWidgets', 'DynDoc'))
 ## Klusta
 https://github.com/kwikteam/klusta/#quick-install-guide
 
-## WaveCluss
-run matlab with command:
+## WaveClus
+Download WaveClus
 ~~~~
-LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
+wget https://github.com/csn-le/wave_clus/archive/testing.zip
+unzip wave_clus-testing.zip
+~~~~
+
+run matlab and the code
+~~~~
+LD_LIBRARY_PATH="`pwd`/MC_StreamAnsiLib" LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
+
+addpath(genpath([pwd '/wake_clus-testing']));
+addpath(genpath([pwd '/src']));
+run_wave_clus
 ~~~~
 
