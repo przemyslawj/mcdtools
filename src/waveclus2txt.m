@@ -18,7 +18,11 @@ for i = 1:length(subdirs)
         
         load(channel_file);
         sorted_cluster_class = sortrows(cluster_class, 1);
-        times_cell = accumarray(1 + sorted_cluster_class(:,1), sorted_cluster_class(:,2), [], @(x){x});
+	if min(sorted_cluster_class(:,1)) < 1
+	  diff = 1 - min(sorted_cluster_class(:,1));
+	  sorted_cluster_class(:,1) = diff + sorted_cluster_class(:,1);
+        end
+        times_cell = accumarray(sorted_cluster_class(:,1), sorted_cluster_class(:,2), [], @(x){x});
         clusters = unique(sorted_cluster_class(:,1));
         
         for cluster_index = 1:length(times_cell)
@@ -27,8 +31,8 @@ for i = 1:length(subdirs)
             fprintf(fid, 't       \tSpikes 2 %s_%d \tUnit\n', channel_name, cluster_index);
             fprintf(fid, '[ms]    \t[<B5>V]      \t    \n');
             times = times_cell{cluster_index};
-            
-            fprintf(fid, '%s', strjoin(string(times), '   \t-10      \t0   \n'));
+            times_str = strtrim(cellstr(num2str(times)));
+            fprintf(fid, strjoin(times_str, '   \t-10      \t0   \n'));
             fprintf(fid, '   \t-10      \t0   \n');
         end
     end

@@ -2,7 +2,7 @@ experiment_name = 'test'
 prb_file = 'mea200.prb'
 
 traces = dict(
-    raw_data_files=['../out2/out.dat'],
+    raw_data_files=['../out/out.dat'],
     voltage_gain=10.,
     sample_rate=25000,
     n_channels=60,
