@@ -3,8 +3,8 @@ SRC_DIR = src
 OBJ_DIR = build
 CFLAGS  = -Wall -std=c++0x
 INCLUDES = -Iincludes
-SRCS = $(SRC_DIR)/mcd2klusta.cpp $(SRC_DIR)/mcd2mat.cpp
-OBJS = $(OBJ_DIR)/mcd2klusta.o
+SRCS = $(SRC_DIR)/mcdio.cpp $(SRC_DIR)/mcd2klusta.cpp $(SRC_DIR)/mcd2mat.cpp
+OBJS = $(OBJ_DIR)/mcd2klusta.o $(OBJ_DIR)/mcdio.o
 # Note: The above will soon get unwieldy.
 # The wildcard and patsubt commands will come to rescue.
 
@@ -23,8 +23,7 @@ $(OBJ_DIR)/mcd2klusta: $(OBJ_DIR)/mcd2klusta.o $(MCD_LIB)
 	g++ -IMC_StreamAnsiLib -o $@ $^
 
 $(OBJ_DIR)/mcd2mat: $(MCD_LIB) $(MATLAB_LIB)
-	mex -v CFLAGS='$(CFLAGS)' $(INCLUDES) -lMCStreamd -LMC_StreamAnsiLib src/mcd2mat.cpp
-	mv mcd2mat.mexa64 $(OBJ_DIR)/
+	mex -v CFLAGS='$(CFLAGS)' $(INCLUDES) -lMCStreamd -LMC_StreamAnsiLib -outdir $(OBJ_DIR) src/mcd2mat.cpp
 	cp MC_StreamAnsiLib/libMCStreamd.so $(OBJ_DIR)/
 
 clean:
