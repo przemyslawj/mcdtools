@@ -3,15 +3,15 @@ SRC_DIR = src
 OBJ_DIR = build
 CFLAGS  = -Wall -std=c++0x
 INCLUDES = -Iincludes
-SRCS = $(SRC_DIR)/mcdio.cpp $(SRC_DIR)/mcd2klusta.cpp $(SRC_DIR)/mcd2mat.cpp
-OBJS = $(OBJ_DIR)/mcd2klusta.o $(OBJ_DIR)/mcdio.o
+SRCS = $(SRC_DIR)/mcdio.cpp $(SRC_DIR)/mcd2klusta.cpp $(SRC_DIR)/mcd2mat.cpp $(SRC_DIR)/findspikes.cpp $(SRC_DIR)/bwbpf.cpp
+OBJS = $(OBJ_DIR)/mcd2klusta.o $(OBJ_DIR)/mcdio.o $(OBJ_DIR)/findspikes.o $(OBJ_DIR)/test_findspikes.o
 # Note: The above will soon get unwieldy.
 # The wildcard and patsubt commands will come to rescue.
 
 MCD_LIB=MC_StreamAnsiLib/libMCStreamd.a
 
 
-all: $(OBJS) $(OBJ_DIR)/mcd2klusta $(OBJ_DIR)/mcd2mat
+all: $(OBJS) $(OBJ_DIR)/mcd2klusta $(OBJ_DIR)/mcd2mat $(OBJ_DIR)/mcd2spikes
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(OBJ_DIR)
@@ -22,9 +22,20 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(OBJ_DIR)/mcd2klusta: $(OBJ_DIR)/mcd2klusta.o $(MCD_LIB)
 	g++ -IMC_StreamAnsiLib -o $@ $^
 
+$(OBJ_DIR)/mcd2spikes: $(OBJ_DIR)/mcd2spikes.o $(OBJ_DIR)/mcdio.o $(OBJ_DIR)/findspikes.o $(OBJ_DIR)/bwbpf.o $(MCD_LIB)
+	g++ -IMC_StreamAnsiLib -o $@ $^
+
 $(OBJ_DIR)/mcd2mat: $(MCD_LIB) $(MATLAB_LIB)
 	mex -v CFLAGS='$(CFLAGS)' $(INCLUDES) -lMCStreamd -LMC_StreamAnsiLib -outdir $(OBJ_DIR) src/mcd2mat.cpp
 	cp MC_StreamAnsiLib/libMCStreamd.so $(OBJ_DIR)/
 
+$(OBJ_DIR)/test_findspikes: $(OBJ_DIR)/test_findspikes.o $(OBJ_DIR)/findspikes.o
+	g++ -IMC_StreamAnsiLib -o $@ $^
+
+
 clean:
 	rm -rf $(OBJ_DIR)
+
+test: $(OBJ_DIR)/test_findspikes
+	./$(OBJ_DIR)/test_findspikes
+
