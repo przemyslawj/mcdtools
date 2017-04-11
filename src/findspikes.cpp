@@ -7,12 +7,12 @@
 
 using namespace std;
 
-double mean(vector<double> data) {
+double mean(const vector<double> &data) {
     double sum = accumulate(data.begin(), data.end(), 0.0);
     return sum / data.size();
 }
 
-double stddev(vector<double> data, double data_mean) {
+double stddev(const vector<double> &data, double data_mean) {
     double mean_sq = data_mean * data_mean;
     double sq_sum = 0.0;
     for (unsigned int i = 0; i < data.size(); ++i) {
@@ -22,7 +22,7 @@ double stddev(vector<double> data, double data_mean) {
     return sqrt(sq_sum);
 }
 
-bool isnegativepeak(vector<double> data, unsigned int i) {
+bool isnegativepeak(const vector<double> &data, unsigned int i) {
     return (i == (data.size() - 1)) || (data[i+1] > data[i]);
 }
 
@@ -30,7 +30,7 @@ bool isnegativepeak(vector<double> data, unsigned int i) {
  * Return spike times in seconds
  */
 vector<double> findspikes(
-        vector<double> data,
+        const vector<double> &data,
         int sampleRate,
         double stdthreshold,
         double spikeRefractoryPeriodMs) {

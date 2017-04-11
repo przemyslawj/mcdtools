@@ -43,7 +43,37 @@
  * f1 - upper half power frequency
  * f2 - lower half power frequency
  */
-void butterworh_bandpass_filter(std::vector<double> v, int n, int s, int f1, int f2) {
+void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, int f2) {
+/**
+  double a = tan(M_PI*f1/s);
+  double a2 = a*a;
+  double r;
+  double *A = (double *)malloc(n*sizeof(double));
+  double *d1 = (double *)malloc(n*sizeof(double));
+  double *d2 = (double *)malloc(n*sizeof(double));
+  double *w0 = (double *)calloc(n, sizeof(double));
+  double *w1 = (double *)calloc(n, sizeof(double));
+  double *w2 = (double *)calloc(n, sizeof(double));
+
+  for(int i=0; i<n; ++i) {
+    r = sin(M_PI*(2.0*i+1.0)/(4.0*n));
+    s = a2 + 2.0*a*r + 1.0;
+    A[i] = 1.0/s;
+    d1[i] = 2.0*(1-a2)/s;
+    d2[i] = -(a2 - 2.0*a*r + 1.0)/s;
+  }
+
+  for (int j=0; j<v.size(); ++j) {
+    double x = v[j];
+    for(int i=0; i<n; ++i) {
+      w0[i] = d1[i]*w1[i] + d2[i]*w2[i] + x;
+      x = A[i]*(w0[i] - 2.0*w1[i] + w2[i]);
+      w2[i] = w1[i];
+      w1[i] = w0[i];
+    }
+    v[j] = x;
+  }
+*/
   double a = cos(M_PI*(f1+f2)/s)/cos(M_PI*(f1-f2)/s);
   double a2 = a*a;
   double b = tan(M_PI*(f1-f2)/s);

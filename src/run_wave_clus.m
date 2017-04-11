@@ -1,4 +1,4 @@
-mcd_dir = '/local/data/public/pmj30/mecp2/2016-02';
+mcd_dir = '/local/data/public/pmj30/mecp2/2017-03-24/';
 
 setup_matlab;
 
@@ -8,7 +8,8 @@ spikeparam.stdmin = 5;
 spikeparam.stdmax = 50;
 spikeparam.detect_fmin = 100;
 spikeparam.detect_order = 4;
-spikeparam.sort_fmin = 100;
+spikeparam.sort_fmin = 300;
+spikeparam.sort_fmax = 8000;
 spikeparam.sort_order = 4;
 
 clusparam.min_clus = 50;
@@ -19,7 +20,7 @@ for i = 1:length(mcd_files)
     [pathstr, name, ext] = fileparts(file);
     sprintf('Parsing file %s', file)
     output_dir = ['wave_clus/' name];
-    %mcd2mat(file, output_dir);
+    mcd2mat(file, output_dir);
 
     cd(output_dir);
 

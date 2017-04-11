@@ -7,7 +7,7 @@
  * Return spike times
  */
 std::vector<double> findspikes(
-        std::vector<double> data,
+        const std::vector<double> &data,
         int sampleRate,
         double stdthreshold,
         double spikeRefractoryPeriodMs);
