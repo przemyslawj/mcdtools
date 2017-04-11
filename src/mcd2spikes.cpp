@@ -24,11 +24,10 @@ int main(int argc, char *argv[]) {
     short *buffer = (short *) malloc(sizeof(short) * size);
     for (int channel = 0; channel < channelsInStream; ++channel) {
         char* channelName = Stream->GetChannel(channel)->GetDecoratedName();
-        printf("Reading data of %ld bytes from channel %s\n", size, channelName);
         ReadRawData(Stream, channel, size, buffer, data);
         vector<double> v(data, data + size);
-        butterworh_bandpass_filter(v, 4, sampleRate, 1000, 8000);
-        vector<double> spiketimes = findspikes(v, sampleRate, 4.0, 2.0);
+        butterworh_bandpass_filter(v, 4, (double) sampleRate, 100.0, 8000.0);
+        vector<double> spiketimes = findspikes(v, sampleRate, 5.0, 2.0);
 
         printf("Spike times [ms] channel %s\n", channelName);
         for (unsigned int i = 0; i < spiketimes.size(); ++i) {

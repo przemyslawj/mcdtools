@@ -36,6 +36,12 @@
 #include <math.h>
 #include <vector>
 
+#define NZEROS 4
+#define NPOLES 4
+#define GAIN   2.437914552e+00
+
+static float xv[NZEROS+1], yv[NPOLES+1];
+
 /**
  * Butterworth highpass filter applied inplace
  * n - filter order (multiple of 4)
@@ -43,8 +49,7 @@
  * f1 - upper half power frequency
  * f2 - lower half power frequency
  */
-void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, int f2) {
-/**
+void butterworh_bandpass_filter(std::vector<double> &v, int n, double s, double f1, double f2) {
   double a = tan(M_PI*f1/s);
   double a2 = a*a;
   double r;
@@ -73,10 +78,10 @@ void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, in
     }
     v[j] = x;
   }
-*/
-  double a = cos(M_PI*(f1+f2)/s)/cos(M_PI*(f1-f2)/s);
+    /*
+  double a = cos(M_PI*((double) f1+f2)/s)/cos(M_PI*((double) f1-f2)/s);
   double a2 = a*a;
-  double b = tan(M_PI*(f1-f2)/s);
+  double b = tan(M_PI*((double) f1-f2)/s);
   double b2 = b*b;
   double r;
 
@@ -92,6 +97,7 @@ void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, in
   double *w3 = (double *)calloc(n, sizeof(double));
   double *w4 = (double *)calloc(n, sizeof(double));
 
+  printf("\n\nHello! %.6f, %.6f", a, b);
   for(int i=0; i<n; ++i) {
     r = sin(M_PI*(2.0*i+1.0)/(4.0*n));
     s = b2 + 2.0*b*r + 1.0;
@@ -100,6 +106,7 @@ void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, in
     d2[i] = 2.0*(b2-2.0*a2-1.0)/s;
     d3[i] = 4.0*a*(1.0-b*r)/s;
     d4[i] = -(b2 - 2.0*b*r + 1.0)/s;
+    printf("\nParams %.6f, %.6f, %.6f, %.6f, %.6f\n", s, d1[0], d2[0], d3[0], d4[0]);
   }
 
   for(int j=0; j < v.size(); ++j) {
@@ -114,5 +121,22 @@ void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, in
     }
     v[j] = x;
   }
+  */
 }
+/* Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
+   Command line: /www/usr/fisher/helpers/mkfilter -Bu -Bp -o 2 -a 1.2000000000e-02 3.2000000000e-01 -l */
 
+/*
+
+	for (long j = 0; j < v.size(); ++j) {
+		xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];
+        xv[4] = v[j] / GAIN;
+        yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3]; yv[3] = yv[4];
+        yv[4] =   (xv[0] + xv[4]) - 2 * xv[2]
+                     + ( -0.2043329507 * yv[0]) + ( -0.0182644811 * yv[1])
+                     + ( -0.1816866080 * yv[2]) + (  1.3945270613 * yv[3]);
+        v[j] = yv[4];
+
+	}
+}
+*/

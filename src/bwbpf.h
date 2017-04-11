@@ -3,7 +3,7 @@
 
 #include <vector>
 
-void butterworh_bandpass_filter(std::vector<double> &v, int n, int s, int f1, int f2);
+void butterworh_bandpass_filter(std::vector<double> &v, int n, double s, double f1, double f2);
 
 #endif
 
