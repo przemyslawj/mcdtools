@@ -8,6 +8,7 @@ end
 
 par = set_parameters();
 par.sr = mcdfileinfo.sample_rate;
+par.stdmin = 4;
 par.detect_fmin = 300;
 par.detect_fmax = 6000;
 par.w_pre = 1;
@@ -15,15 +16,17 @@ par.w_post = 1;
 par.detection = 'neg';
 par.ref = ceil(par.ref_ms/1000 * par.sr);
 
+fprintf(fid, 'Spike detection with WaveClus par.stdmin=%d\n', par.stdmin);
 for i=1:mcdfileinfo.channels_count
     channel_name = mcdfileinfo.channel_names{i};
     fprintf(fid, '\nt       \tSpikes 2 %s \tUnit\n', channel_name);
-    
+    fprintf(fid, '[ms]\t[<B5>V]\n');
+
     x = read_channel(mcdfile, i);
 
     [~, ~, spike_indecies] = amp_detect(x,par);
     spike_times_ms = spike_indecies / par.sr * 1000;
-    
+
     for j=1:size(spike_times_ms, 2)
         fprintf(fid, '%d   \t-10      \t0   \n', spike_times_ms(j));
     end
