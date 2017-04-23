@@ -1,10 +1,7 @@
 function extract_spikes(mcdfile, output_file)
 
 mcdfileinfo = mcd_fileinfo(mcdfile);
-fid = fopen(output_file, 'w+');
-if fid < 0
-    error(['Couldnt open file ' output_file ' for writing']);
-end
+writer = H5SpikeWriter(output_file);
 
 par = set_parameters();
 par.sr = mcdfileinfo.sample_rate;
@@ -16,21 +13,31 @@ par.w_post = 1;
 par.detection = 'neg';
 par.ref = ceil(par.ref_ms/1000 * par.sr);
 
-fprintf(fid, 'Spike detection with WaveClus par.stdmin=%d\n', par.stdmin);
+[~, filename] = fileparts(output_file);
+parts =  strsplit(filename, '[\\_-]', 'DelimiterType','RegularExpression');
+
+add_meta(writer, 'par_stdmin', par.stdmin);
+add_meta(writer, 'sample_rate', par.sr);
+add_meta(writer, 'type', parts{1});
+add_meta(writer, 'culture_date', [parts{2} '-' parts{3} '-' parts{4}]);
+add_meta(writer, 'mea_id', parts{5});
+add_meta(writer, 'embryo_id', sscanf(parts{5}, '%d'));
+div = sscanf(parts{6}(4:5), '%d');
+add_meta(writer, 'div', div);
+write_meta(writer, mcdfileinfo.channel_names);
+all_spikes = [];
+spikeCounts = zeros(1,mcdfileinfo.channels_count);
+
 for i=1:mcdfileinfo.channels_count
-    channel_name = mcdfileinfo.channel_names{i};
-    fprintf(fid, '\nt       \tSpikes 2 %s \tUnit\n', channel_name);
-    fprintf(fid, '[ms]\t[<B5>V]\n');
 
     x = read_channel(mcdfile, i);
 
     [~, ~, spike_indecies] = amp_detect(x,par);
-    spike_times_ms = spike_indecies / par.sr * 1000;
+    spike_times_sec = spike_indecies / par.sr;
 
-    for j=1:size(spike_times_ms, 2)
-        fprintf(fid, '%d   \t-10      \t0   \n', spike_times_ms(j));
-    end
+    spikeCounts(i) = length(spike_times_sec);
+    all_spikes = cat(2, all_spikes, spike_times_sec);
 end
 
-fclose(fid);
+write_spikes(writer, all_spikes, spikeCounts);
 end
