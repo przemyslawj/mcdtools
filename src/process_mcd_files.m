@@ -7,7 +7,7 @@ for i = 1:length(mcd_files)
     input_file = mcd_files{i};
     [~, filename] = fileparts(input_file);
     
-    output_file = [ output_dir '/' filename '.txt'];
+    output_file = [ output_dir '/' filename '.h5'];
     ['Writing spikes to ' output_file]
     extract_spikes(input_file, output_file);
 end

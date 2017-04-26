@@ -13,7 +13,7 @@ par.w_post = 1;
 par.detection = 'neg';
 par.ref = ceil(par.ref_ms/1000 * par.sr);
 
-[~, filename] = fileparts(output_file);
+[~, filename] = fileparts(mcdfile);
 parts =  strsplit(filename, '[\\_-]', 'DelimiterType','RegularExpression');
 
 add_meta(writer, 'par_stdmin', par.stdmin);
@@ -25,6 +25,8 @@ add_meta(writer, 'embryo_id', sscanf(parts{5}, '%d'));
 div = sscanf(parts{6}(4:5), '%d');
 add_meta(writer, 'div', div);
 write_meta(writer, mcdfileinfo.channel_names);
+close(writer);
+
 all_spikes = [];
 spikeCounts = zeros(1,mcdfileinfo.channels_count);
 
