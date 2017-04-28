@@ -12,6 +12,7 @@ classdef H5SpikeWriter < SpikeWriter
     properties
         fid
         gid
+        epos
     end
     
     methods
@@ -23,37 +24,50 @@ classdef H5SpikeWriter < SpikeWriter
             obj.gid = H5G.create(obj.fid,'meta',plist,plist,plist);
         end
         
-        function write_meta(obj, channel_names)
+        function obj = add_channel_meta(obj, channel_names)
             
             write_dataset(obj, obj.gid, 'creation_date', datestr(now));
             write_dataset(obj, obj.fid, 'array', obj.array);
             
             write_cell_array(obj, channel_names, '/names');
             
+            obj.epos = zeros(length(channel_names),2);
+            for i=1:length(channel_names)
+                [x, y] = obj.get_epos(str2double(channel_names(i)));
+                obj.epos(i,1) = x;
+                obj.epos(i,2) = y;
+            end            
+            
         end
        
-        function add_meta(obj, key, value)
+        function obj = add_meta(obj, key, value)
             write_dataset(obj, obj.gid, key, value);
         end
         
-        function close(obj)
-            %Close file for writing, needs to be called after writing
-            %metadata and before writing spikes
+        function write_meta(obj)
+            %Close file for writing, needs to be called before writing with 
+            %High level HDF5 API
             H5G.close(obj.gid);
             H5F.close(obj.fid);
+            
+            h5create(obj.output_file, '/epos', size(obj.epos));
+            h5write(obj.output_file, '/epos', obj.epos);
         end
         
         % spikes - list of concatanated spike times
         % sCount - list of counts of spikes on each channel
-        function write_spikes(obj, spikes, sCount)
+        function obj = write_spikes(obj, spikes, sCount, thresholds)
             h5create(obj.output_file, '/spikes', length(spikes));
             h5write(obj.output_file, '/spikes', spikes);
             
             h5create(obj.output_file, '/sCount', length(sCount));
             h5write(obj.output_file, '/sCount', sCount);
             
-            h5create(obj.output_file, '/epos', size(obj.epos));
-            h5write(obj.output_file, '/epos', obj.epos);
+            if (~isempty(thresholds) > 0)
+                h5create(obj.output_file, '/thresholds', length(thresholds));
+                h5write(obj.output_file, '/thresholds', thresholds);
+            end
+            
         end
         
     end
