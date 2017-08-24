@@ -13,7 +13,7 @@ OBJS = $(OBJ_DIR)/mcd2klusta.o $(OBJ_DIR)/mcdio.o $(OBJ_DIR)/findspikes.o $(OBJ_
 MCD_LIB=MC_StreamAnsiLib/libMCStreamd.a
 
 
-all: $(OBJS) $(OBJ_DIR)/mcd2klusta $(OBJ_DIR)/mcd2mat $(OBJ_DIR)/mcd_fileinfo $(OBJ_DIR)/mcd2spikes
+all: $(OBJS) $(OBJ_DIR)/mcd2klusta $(OBJ_DIR)/mcd2mat $(OBJ_DIR)/mcd_fileinfo $(OBJ_DIR)/mcd2spikes $(OBJ_DIR)/read_channel
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(OBJ_DIR)
