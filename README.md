@@ -40,3 +40,14 @@ metadata about the recording
 process_mcd_files('/path/to/input/mcd/files', 'output/dir/');
 ~~~~
 
+MCD files in input directory need to follow the naming convention:
+~~~~
+{TYPE}_{DATE}-{MEA_ID}_DIV{DAY_IN_VITRO}.mcd
+~~~~
+Where:
+* TYPE is the condition distinguishing the recordings, e.g. KO or WT,
+* DATE is the date of culture initiation in DD_MM_YY format, e.g. 03_05_17
+* MEA_ID is in [1-9][A-Z] format where the digit corresponds to a pup ordinal
+and the letter is the ordinal of the dish initiated from that pup, e.g. 4C
+* DAY_IN_VITRO - DIV of the culture during the recording
+
